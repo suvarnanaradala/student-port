@@ -22,12 +22,18 @@ app.get('/students', (req, res) => {
     }
     try {
       const students = JSON.parse(data);
+      res.setHeader('Content-Type', 'application/json');
       res.json(students);
     } catch (error) {
       console.error('Error parsing JSON:', error);
       res.status(500).json({ error: 'Invalid JSON format' });
     }
   });
+});
+
+// Serve index.html for any other route (optional)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Start server
