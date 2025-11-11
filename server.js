@@ -5,7 +5,7 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000; // Dynamic port for Render
 
-// Serve public folder
+// Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Homepage route
@@ -31,8 +31,8 @@ app.get('/students', (req, res) => {
   });
 });
 
-// Serve index.html for any other route (optional)
-app.get('*', (req, res) => {
+// Catch-all route to serve index.html for client-side routing (Express 5 compatible)
+app.get('/:any(*)', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
