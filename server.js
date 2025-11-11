@@ -3,17 +3,17 @@ const fs = require('fs');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Dynamic port for Render
+const PORT = process.env.PORT || 3000;
 
-// Serve static files from the 'public' folder
+// Serve static files from public
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Homepage route
+// Homepage
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// API route for student data
+// API to fetch student data
 app.get('/students', (req, res) => {
   fs.readFile(path.join(__dirname, 'student.json'), 'utf-8', (err, data) => {
     if (err) {
@@ -22,7 +22,6 @@ app.get('/students', (req, res) => {
     }
     try {
       const students = JSON.parse(data);
-      res.setHeader('Content-Type', 'application/json');
       res.json(students);
     } catch (error) {
       console.error('Error parsing JSON:', error);
@@ -31,8 +30,8 @@ app.get('/students', (req, res) => {
   });
 });
 
-// Catch-all route to serve index.html for client-side routing (Express 5 compatible)
-app.get('/:any(*)', (req, res) => {
+// Catch-all to serve index.html for client-side routing
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
