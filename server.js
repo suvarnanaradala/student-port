@@ -5,15 +5,15 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Serve static files from public
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Homepage
+// Homepage route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// API to fetch student data
+// API route for students
 app.get('/students', (req, res) => {
   fs.readFile(path.join(__dirname, 'student.json'), 'utf-8', (err, data) => {
     if (err) {
@@ -30,12 +30,12 @@ app.get('/students', (req, res) => {
   });
 });
 
-// Catch-all to serve index.html for client-side routing
-app.get('*', (req, res) => {
+// Catch-all route (use app.use instead of app.get('*'))
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`✅ Server running at port ${PORT}`);
+  console.log(`✅ Server running on port ${PORT}`);
 });
