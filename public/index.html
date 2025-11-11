@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Portfolio</title>
+<style>
+  :root {
+    --dark-blue: #04132a;
+    --light-blue-white: #f9fcff;
+    --accent: #0074D9;
+    --text-dark: #03172d;
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: var(--dark-blue);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  header {
+    text-align: center;
+    padding: 40px 0 10px;
+  }
+
+  header h1 {
+    color: var(--accent);
+    font-size: 32px;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  .search-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .search-row input {
+    padding: 10px 14px;
+    width: 320px;
+    border-radius: 8px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+  }
+
+  .search-row button {
+    background-color: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+  }
+
+  .search-row button:hover {
+    transform: translateY(-2px);
+    background-color: #005fa8;
+  }
+
+  .container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 40px 60px;
+  }
+
+  .card {
+    background: var(--light-blue-white);
+    border-radius: 15px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+
+  .card h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: var(--accent);
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+    padding-bottom: 4px;
+  }
+
+  .card p, .card ul {
+    margin: 6px 0;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .card ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+
+  .last-row {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 900px) {
+    .container { grid-template-columns: 1fr; padding: 20px; }
+    .last-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Student Portfolio</h1>
+    <div class="search-row">
+      <input type="text" id="rollInput" placeholder="Enter Registration Number" onkeydown="handleEnter(event)">
+      <button onclick="searchStudent()">Search</button>
+    </div>
+  </header>
+
+  <div class="container" id="detailsContainer">
+    <div class="card"><h2>Basic Information</h2><p><strong>Name:</strong> -</p><p><strong>Roll No:</strong> -</p><p><strong>University:</strong> -</p></div>
+    <div class="card"><h2>Academic Details</h2><p><strong>School CGPA:</strong> -</p><p><strong>Inter CGPA:</strong> -</p><p><strong>B.Tech CGPA:</strong> -</p></div>
+    <div class="card"><h2>Skills</h2><ul><li>-</li></ul></div>
+    <div class="card"><h2>Internships</h2><ul><li>-</li></ul></div>
+    <div class="card"><h2>Certifications</h2><ul><li>-</li></ul></div>
+    <div class="card"><h2>Projects</h2><ul><li>-</li></ul></div>
+    <div class="last-row">
+      <div class="card"><h2>Coding Platforms</h2><ul><li>-</li></ul></div>
+      <div class="card"><h2>Contact Details</h2><p><strong>Phone:</strong> -</p><p><strong>Email:</strong> -</p><p><strong>Address:</strong> -</p></div>
+    </div>
+  </div>
+
+  <script>
+    function handleEnter(e) {
+      if (e.key === 'Enter') searchStudent();
+    }
+
+    async function searchStudent() {
+      const roll = document.getElementById('rollInput').value.trim();
+      if (!roll) {
+        alert("Please enter a registration number!");
+        return;
+      }
+
+      try {
+        const res = await fetch('/students');
+        const data = await res.json();
+        const student = data.find(s => s.roll === roll);
+
+        if (!student) {
+          alert("No details found for this registration number!");
+          return;
+        }
+
+        document.getElementById('detailsContainer').innerHTML = `
+          <div class="card">
+            <h2>Basic Information</h2>
+            <p><strong>Name:</strong> ${student.name}</p>
+            <p><strong>Roll No:</strong> ${student.roll}</p>
+            <p><strong>University:</strong> ${student.university}</p>
+          </div>
+
+          <div class="card">
+            <h2>Academic Details</h2>
+            <p><strong>School CGPA:</strong> ${student.school_cgpa}</p>
+            <p><strong>Inter CGPA:</strong> ${student.inter_cgpa}</p>
+            <p><strong>B.Tech CGPA:</strong> ${student.btech_cgpa}</p>
+          </div>
+
+          <div class="card">
+            <h2>Skills</h2>
+            <ul>${student.skills.map(skill => `<li>${skill}</li>`).join('')}</ul>
+          </div>
+
+          <div class="card">
+            <h2>Internships</h2>
+            <ul>${student.internships.map(i => `<li>${i}</li>`).join('')}</ul>
+          </div>
+
+          <div class="card">
+            <h2>Certifications</h2>
+            <ul>${student.certifications.map(c => `<li>${c}</li>`).join('')}</ul>
+          </div>
+
+          <div class="card">
+            <h2>Projects</h2>
+            <ul>${student.projects.map(p => `<li>${p}</li>`).join('')}</ul>
+          </div>
+
+          <div class="last-row">
+            <div class="card">
+              <h2>Coding Platforms</h2>
+              <ul>${student.coding_platforms.map(c => `<li>${c}</li>`).join('')}</ul>
+            </div>
+            <div class="card">
+              <h2>Contact Details</h2>
+              <p><strong>Phone:</strong> ${student.contact.phone}</p>
+              <p><strong>Email:</strong> ${student.contact.email}</p>
+              <p><strong>Address:</strong> ${student.contact.address}</p>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+        alert("Server error — check if server.js is running.");
+      }
+    }
+  </script>
+</body>
+</html>
